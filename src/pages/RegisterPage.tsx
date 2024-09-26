@@ -13,8 +13,16 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+
+      const apiUrl = process.env.REACT_APP_API_URL; 
+      console.log("apiUrl: ", apiUrl);
       // バックエンドに新規登録リクエストを送信
-      const response = await axios.post('/api/register', { name, email, password });
+      const response = await axios.post(`${apiUrl}/register`, { name, email, password }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
 
       // 登録成功時、ログインページへリダイレクト
       if (response.status === 201) {

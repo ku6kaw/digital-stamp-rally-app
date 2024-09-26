@@ -12,8 +12,14 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();  // ページリロードを防ぐ
     try {
+      const apiUrl = process.env.REACT_APP_API_URL; 
       // バックエンドにログインリクエストを送信
-      const response = await axios.post('/api/login', { email, password });
+      const response = await axios.post(`${apiUrl}/login`, { email, password }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
 
       // ログイン成功時、ホームページにリダイレクト
       if (response.status === 200) {
