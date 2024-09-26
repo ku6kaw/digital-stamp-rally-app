@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import TopPage from './pages/TopPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import HomePage from './pages/HomePage';
+import StampRallyPage from './pages/StampRallyPage';
+import GenerateRoutePage from './pages/GenerateRoutePage';
+import SpotListPage from './pages/SpotListPage';
+import SpotDetailPage from './pages/SpotDetailPage';
+import QRCodeScanPage from './pages/QRCodeScanPage';
+import PastStampRalliesPage from './pages/PastStampRalliesPage';
+import StampRallyDetailPage from './pages/StampRallyDetailPage';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<TopPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/home" element={<HomePage />} /> 
+        <Route path="/stamp_rally" element={<StampRallyPage />} />
+        <Route path="/generate_route" element={<GenerateRoutePage />} />
+        <Route path="/spots" element={<SpotListPage />} />
+        <Route path="/spot_detail/:spotId" element={<SpotDetailPage />} />
+        <Route path="/qr-scan" element={<QRCodeScanPage />} />
+        <Route path="/past_stamp_rally" element={<PastStampRalliesPage />} />
+        <Route path="/stamp-rally/:id" element={<StampRallyDetailPage />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
