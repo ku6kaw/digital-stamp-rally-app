@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api'; // axiosインスタンス
+import { Button, Box, Typography, Container } from '@mui/material';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,55 +43,66 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <h1>サービス名</h1>
-      <div style={buttonContainerStyle}>
-        <button onClick={goToFeature1} style={buttonStyle}>
-          スタンプラリー
-        </button>
-        <button onClick={goToFeature2} style={buttonStyle}>
-          場所紹介
-        </button>
-        <button onClick={goToFeature3} style={buttonStyle}>
-          過去のスタンプラリー
-        </button>
-      </div>
-      <button onClick={handleLogout} style={logoutButtonStyle}>
-        ログアウト
-      </button>
-    </div>
+    <Container maxWidth="xs">
+      <Box 
+        display="flex" 
+        flexDirection="column" 
+        alignItems="center" 
+        height="80vh"  // 高さを調整
+        justifyContent="center"  // 中央に配置
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          サービス名
+        </Typography>
+
+        <Box 
+          display="flex" 
+          flexDirection="column" 
+          alignItems="center" 
+          gap={2}  // ボタンの間のスペース
+          width="100%"
+        >
+          <Button 
+            variant="contained" 
+            color="primary" 
+            fullWidth
+            onClick={goToFeature1}
+            sx={{ mb: 2, padding: '20px', width: '80%', fontSize: '20px' }}
+          >
+            スタンプラリー
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            fullWidth
+            onClick={goToFeature2}
+            sx={{ mb: 2, padding: '20px', width: '80%', fontSize: '20px' }}
+          >
+            場所紹介
+          </Button>
+          <Button 
+            variant="contained" 
+            color="success" 
+            fullWidth
+            onClick={goToFeature3}
+            sx={{ padding: '20px', width: '80%', fontSize: '20px' }}
+          >
+            過去のスタンプラリー
+          </Button>
+        </Box>
+
+        <Button 
+          variant="outlined" 
+          color="error" 
+          fullWidth
+          onClick={handleLogout}
+          sx={{ mt: 4, padding: '10px', width: '60%' }}  // ログアウトボタンに少し余白を追加
+        >
+          ログアウト
+        </Button>
+      </Box>
+    </Container>
   );
-};
-
-// スタイル定義
-const containerStyle: React.CSSProperties = {
-  textAlign: 'center',
-  marginTop: '50px',
-};
-
-const buttonContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '20px',  // ボタン間のスペース
-  marginTop: '30px',
-};
-
-const buttonStyle: React.CSSProperties = {
-  width: '200px',
-  padding: '15px',
-  fontSize: '18px',
-  borderRadius: '10px',
-  border: '1px solid #ccc',
-  backgroundColor: '#f0f0f0',
-  cursor: 'pointer',
-};
-
-const logoutButtonStyle: React.CSSProperties = {
-  marginTop: '30px',
-  padding: '10px 20px',
-  fontSize: '16px',
-  cursor: 'pointer',
 };
 
 export default HomePage;
