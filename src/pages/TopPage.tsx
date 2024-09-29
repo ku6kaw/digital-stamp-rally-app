@@ -29,7 +29,7 @@ const TopPage: React.FC = () => {
         gutterBottom 
         sx={{ mb: 16 }} 
       >
-        サービス名
+        スタンぷらす
       </Typography>
 
       <Button

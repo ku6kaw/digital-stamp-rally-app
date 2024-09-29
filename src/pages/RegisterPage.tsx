@@ -2,24 +2,35 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Button, TextField, Typography, Container } from '@mui/material';
+import { useAuth } from '../hooks/useAuth';  // useAuthフックをインポート
 
 const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth();  // ログイン機能を使うためのuseAuthフックを取得
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const apiUrl = process.env.REACT_APP_API_URL; 
+      // 新規登録リクエストを送信
       const response = await axios.post(`${apiUrl}/register`, { name, email, password }, {
-        headers: { 'Content-Type': 'application/json', 'Accept': '*/*', 'Access-Control-Allow-Origin': '*' },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.status === 201) {
-        navigate('/login');
+        // トークンを取得し、ログイン処理
+        const loginResponse = await axios.post(`${apiUrl}/login`, { email, password }, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (loginResponse.status === 200) {
+          login(loginResponse.data.access_token);  // ログイン処理
+          navigate('/home');  // ホーム画面に遷移
+        }
       }
     } catch (error) {
       setError('登録に失敗しました。入力情報を確認してください。');

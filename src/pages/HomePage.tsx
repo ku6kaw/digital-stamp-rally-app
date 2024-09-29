@@ -1,37 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; // 名前付きエクスポートでインポート
 import api from '../services/api'; // axiosインスタンス
-import { Button, Box, Typography, Container, IconButton } from '@mui/material';
+import { Button, Box, Typography, Container } from '@mui/material';
 import HikingIcon from '@mui/icons-material/Hiking';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import DownloadIcon from '@mui/icons-material/Download';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // ログインしているユーザーIDを取得（ここでは仮のユーザーIDを使用）
-  const userId = '12345';  // 実際にはログイン情報から取得
+  // ログインしているユーザーのIDを取得する処理
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token); // トークンをデコード
+        setUserId(decoded?.email); // デコードした情報からユーザーIDやメールをセット
+      } catch (error) {
+        console.error('トークンのデコードに失敗しました:', error);
+        navigate('/login'); // エラー時にはログイン画面にリダイレクト
+      }
+    } else {
+      navigate('/login'); // ログインしていない場合、ログイン画面にリダイレクト
+    }
+  }, [navigate]);
 
   // スタンプラリーページに遷移する処理
-  // const goToFeature1 = async () => {
-  //   try {
-  //     const response = await api.post('/api/check_stamp_rally', { userId });
-  //     if (response.data.hasIncompleteStampRally) {
-  //       navigate('/stamp_rally'); 
-  //     } else {
-  //       navigate('/generate_route'); 
-  //     }
-  //   } catch (error) {
-  //     console.error('Error checking stamp rally status:', error);
-  //   }
-  // };
+  const goToFeature1 = async () => {
+    if (!userId) return;
 
-  const goToFeature1 = () => {
-    navigate('/generate_route'); 
-  }
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL; 
+      const response = await api.post(`${apiUrl}/stamp-rally/incomplete`, { user_id: userId },{
+        headers: { 'Content-Type': 'application/json', 'Accept': '*/*' },
+      });
+      if (response.data.exist) {
+        navigate('/stamp_rally'); 
+      } else {
+        navigate('/generate_route'); 
+      }
+    } catch (error) {
+      console.error('スタンプラリーの状態確認中にエラーが発生しました:', error);
+    }
+  };
 
   // ログアウト処理
   const handleLogout = () => {
+    localStorage.removeItem('token'); // トークンを削除
     navigate('/');
   };
 
@@ -47,7 +64,7 @@ const HomePage: React.FC = () => {
   return (
     <Container maxWidth="xs" sx={{ backgroundColor: '#F2F2F7', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
-        サービス名
+        スタンぷらす
       </Typography>
 
       <Box display="flex" flexDirection="column" alignItems="center" width="100%" gap={3}>
