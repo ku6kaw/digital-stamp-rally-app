@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Button, Container, FormControl, InputLabel, MenuItem, Select, Typography, Grid, Paper } from '@mui/material';
+import { Box, Button, Container, FormControl, MenuItem, Select, Typography, Grid, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // axiosをインポート
 
 const GenerateRoutePage: React.FC = () => {
   const [startStation, setStartStation] = useState('');
@@ -8,27 +9,53 @@ const GenerateRoutePage: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState('');
   const [hours, setHours] = useState('3');
   const [minutes, setMinutes] = useState('0');
-
   const navigate = useNavigate();
 
   // 駅と観光地の仮データ
   const stations = ['JR駅', '私鉄駅'];
   const places = ['観光地1', '観光地2', '観光地3', '観光地4', '観光地5'];
 
-  const handleGenerateRoute = () => {
-    if (!startStation || !goalStation || !hours || !minutes) {
+  const handleGenerateRoute = async () => {
+    // 入力チェック
+    if (!startStation || !goalStation || !hours || !minutes || !selectedPlace) {
       alert('すべての項目を選択してください');
       return;
     }
-    navigate('/stamp_rally');
+
+    // APIリクエスト用データの構築
+    const requestData = {
+      user_id: localStorage.getItem('user_id'), // ログインユーザーID（ローカルストレージから取得）
+      start_station: startStation,
+      goal_station: goalStation,
+      selected_place: selectedPlace,
+      total_time: `${hours}時間${minutes}分`,
+    };
+
+    try {
+      // API呼び出し
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await axios.post(`${apiUrl}/generate-route`, requestData, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      // 成功時の処理
+      if (response.status === 200) {
+        navigate(`/stamp_rally/${response.data.stamp_id}`); // スタンプラリーページに遷移
+      } else {
+        alert('経路の生成に失敗しました。');
+      }
+    } catch (error) {
+      console.error('経路生成エラー:', error);
+      alert('経路生成に失敗しました。もう一度お試しください。');
+    }
   };
 
   return (
     <Container
       maxWidth="sm"
       sx={{
-        backgroundColor: '#f2f2f7', 
-        height: '100vh', 
+        backgroundColor: '#f2f2f7',
+        height: '100vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

@@ -16,16 +16,16 @@ const LoginPage: React.FC = () => {
       const response = await axios.post(`${apiUrl}/login`, { email, password }, {
         headers: { 'Content-Type': 'application/json' },
       });
-
-      if (response.status === 200 && response.data.access_token) {
+  
+      if (response.status === 200) {
         login(response.data.access_token);  // ログイン時にトークンを保存
-      } else {
-        setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
       }
     } catch (error) {
+      console.error('ログインに失敗しました', error);
       setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
     }
   };
+  
 
   return (
     <Container maxWidth="xs">

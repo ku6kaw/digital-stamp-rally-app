@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, createContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 // ユーザー情報を格納するためのコンテキスト
 const AuthContext = createContext<any>(null);
@@ -31,11 +32,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ログイン処理
   const login = (token: string) => {
-    localStorage.setItem('token', token);  // トークンをローカルストレージに保存
-    const decoded: any = jwtDecode(token);  // トークンをデコード
-    setUser(decoded);  // ユーザー情報を保存
-    navigate('/home');  // ログイン後にホームページへリダイレクト
+    try {
+      localStorage.setItem('token', token);  // トークンをローカルストレージに保存
+      const decoded: any = jwtDecode(token);  // トークンをデコード
+      setUser(decoded);  // ユーザー情報を保存
+      navigate('/home');  // ログイン後にホームページへリダイレクト
+    } catch (error) {
+      console.error('ログインに失敗しました', error);
+    }
   };
+  
 
   // ログアウト処理
   const logout = () => {

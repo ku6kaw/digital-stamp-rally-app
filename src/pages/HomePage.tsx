@@ -1,55 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // 名前付きエクスポートでインポート
-import api from '../services/api'; // axiosインスタンス
+import { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import api from '../services/api';
 import { Button, Box, Typography, Container } from '@mui/material';
 import HikingIcon from '@mui/icons-material/Hiking';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import DownloadIcon from '@mui/icons-material/Download';
 
 const HomePage: React.FC = () => {
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [userId, setUserId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // ログインしているユーザーのIDを取得する処理
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token); // トークンをデコード
-        setUserId(decoded?.email); // デコードした情報からユーザーIDやメールをセット
-      } catch (error) {
-        console.error('トークンのデコードに失敗しました:', error);
-        navigate('/login'); // エラー時にはログイン画面にリダイレクト
-      }
+    if (user) {
+      setUserId(user.sub.user_id);  // デコードしたuser_idをセット
+      console.log('userId:', user.sub.user_id);
     } else {
-      navigate('/login'); // ログインしていない場合、ログイン画面にリダイレクト
+      navigate('/login');
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   // スタンプラリーページに遷移する処理
   const goToFeature1 = async () => {
-    if (!userId) return;
+    if (!userId) return;  // userIdがセットされていなければ処理を停止
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL; 
-      const response = await api.post(`${apiUrl}/stamp-rally/incomplete`, { user_id: userId },{
-        headers: { 'Content-Type': 'application/json', 'Accept': '*/*' },
-      });
+      const response = await api.post(`${apiUrl}/stamp-rally/incomplete`, { user_id: userId });
+
       if (response.data.exist) {
-        navigate('/stamp_rally'); 
+        navigate('/stamp_rally');
       } else {
-        navigate('/generate_route'); 
+        navigate('/generate_route');
       }
     } catch (error) {
       console.error('スタンプラリーの状態確認中にエラーが発生しました:', error);
     }
-  };
-
-  // ログアウト処理
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // トークンを削除
-    navigate('/');
   };
 
   // 他のページへの遷移
@@ -128,7 +116,7 @@ const HomePage: React.FC = () => {
         variant="outlined"
         color="error"
         fullWidth
-        onClick={handleLogout}
+        onClick={logout}
         sx={{ mt: 4, padding: '12px', width: '60%', borderRadius: '12px' }}  // ログアウトボタンに丸みを追加
       >
         ログアウト
