@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
-import { Box, Button, Container, FormControl, MenuItem, Select, Typography, Grid, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Container, FormControl, MenuItem, Select, Typography, Grid, Paper, Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // axiosをインポート
+import { useUserId } from '../hooks/useUserId';
+import axios from 'axios';
 
 const GenerateRoutePage: React.FC = () => {
   const [startStation, setStartStation] = useState('');
   const [goalStation, setGoalStation] = useState('');
   const [selectedPlace, setSelectedPlace] = useState('');
+  const [places, setPlaces] = useState([]);
   const [hours, setHours] = useState('3');
   const [minutes, setMinutes] = useState('0');
+  const [includeLunch, setIncludeLunch] = useState(false); // 昼食を含むかどうかの状態
   const navigate = useNavigate();
+  const userId = useUserId();
 
   // 駅と観光地の仮データ
   const stations = ['JR駅', '私鉄駅'];
-  const places = ['観光地1', '観光地2', '観光地3', '観光地4', '観光地5'];
+
+  // APIから観光地データを取得する
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await axios.get(`${apiUrl}/spots_list`);
+        if (response.status === 200) {
+          setPlaces(response.data.spots_list); // 観光地データをセット
+        }
+      } catch (error) {
+        console.error('観光地データの取得中にエラーが発生しました:', error);
+      }
+    };
+    
+    fetchPlaces(); // コンポーネントのマウント時にデータを取得
+  }, []);
 
   const handleGenerateRoute = async () => {
     // 入力チェック
@@ -22,13 +42,17 @@ const GenerateRoutePage: React.FC = () => {
       return;
     }
 
+    // 所要時間をフォーマットする
+    const requiredTime = `${hours}:${minutes}`;
+
     // APIリクエスト用データの構築
     const requestData = {
-      user_id: localStorage.getItem('user_id'), // ログインユーザーID（ローカルストレージから取得）
+      user_id: userId,
       start_station: startStation,
       goal_station: goalStation,
       selected_place: selectedPlace,
-      total_time: `${hours}時間${minutes}分`,
+      required_time: requiredTime,
+      include_lunch: includeLunch,
     };
 
     try {
@@ -169,8 +193,12 @@ const GenerateRoutePage: React.FC = () => {
                 sx={{ height: '56px' }} // フォームの高さを固定
               >
                 <MenuItem value=""><em>1つ選択</em></MenuItem>
-                {places.map((place, index) => (
-                  <MenuItem key={index} value={place}>{place}</MenuItem>
+                <MenuItem value="none">なし</MenuItem>
+                {/* 観光地データを動的に表示 */}
+                {places.map((place: any, index: number) => (
+                  <MenuItem key={index} value={place.spot_id}>
+                    {place.spot_name}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -232,6 +260,18 @@ const GenerateRoutePage: React.FC = () => {
             </Grid>
           </Grid>
         </Grid>
+
+        {/* 昼食を含むかどうかの選択 */}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={includeLunch}
+              onChange={(e) => setIncludeLunch(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="昼食を含む"
+        />
 
         {/* 生成ボタン */}
         <Button

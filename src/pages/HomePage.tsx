@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useUserId } from '../hooks/useUserId';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import { Button, Box, Typography, Container } from '@mui/material';
@@ -9,18 +9,9 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import DownloadIcon from '@mui/icons-material/Download';
 
 const HomePage: React.FC = () => {
-  const { user, logout } = useAuth();
-  const [userId, setUserId] = useState<string | null>(null);
+  const { logout } = useAuth();
+  const userId = useUserId(); 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      setUserId(user.sub.user_id);  // デコードしたuser_idをセット
-      console.log('userId:', user.sub.user_id);
-    } else {
-      navigate('/login');
-    }
-  }, [user, navigate]);
 
   // スタンプラリーページに遷移する処理
   const goToFeature1 = async () => {
