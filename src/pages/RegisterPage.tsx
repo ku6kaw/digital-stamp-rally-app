@@ -10,35 +10,21 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // ログインボタン押下時の処理(仮)
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 入力項目が空かどうかを確認
-    if (!email || !password) {
-      setError('名前とメールアドレスとパスワードを入力してください。');
-      return;
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL; 
+      const response = await axios.post(`${apiUrl}/register`, { name, email, password }, {
+        headers: { 'Content-Type': 'application/json', 'Accept': '*/*', 'Access-Control-Allow-Origin': '*' },
+      });
+
+      if (response.status === 201) {
+        navigate('/login');
+      }
+    } catch (error) {
+      setError('登録に失敗しました。入力情報を確認してください。');
     }
-
-    // 仮の処理として、入力項目が正しい場合に次のページへ遷移
-    navigate('/home');
   };
-
-  // const handleRegister = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const apiUrl = process.env.REACT_APP_API_URL; 
-  //     const response = await axios.post(`${apiUrl}/register`, { name, email, password }, {
-  //       headers: { 'Content-Type': 'application/json' },
-  //     });
-
-  //     if (response.status === 201) {
-  //       navigate('/login');
-  //     }
-  //   } catch (error) {
-  //     setError('登録に失敗しました。入力情報を確認してください。');
-  //   }
-  // };
 
   return (
     <Container maxWidth="xs">

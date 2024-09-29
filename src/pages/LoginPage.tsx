@@ -9,36 +9,21 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // ログインボタン押下時の処理(仮)
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 入力項目が空かどうかを確認
-    if (!email || !password) {
-      setError('メールアドレスとパスワードを入力してください。');
-      return;
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL; 
+      const response = await axios.post(`${apiUrl}/login`, { email, password }, {
+        headers: { 'Content-Type': 'application/json', 'Accept': '*/*', 'Access-Control-Allow-Origin': '*' },
+      });
+
+      if (response.status === 200) {
+        navigate('/home');
+      }
+    } catch (error) {
+      setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
     }
-
-    // 仮の処理として、入力項目が正しい場合に次のページへ遷移
-    navigate('/home');
   };
-
-  // const handleLogin = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const apiUrl = process.env.REACT_APP_API_URL; 
-  //     const response = await axios.post(`${apiUrl}/login`, { email, password }, {
-  //       headers: { 'Content-Type': 'application/json' },
-  //       withCredentials: true,
-  //     });
-
-  //     if (response.status === 200) {
-  //       navigate('/home');
-  //     }
-  //   } catch (error) {
-  //     setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
-  //   }
-  // };
 
   return (
     <Container maxWidth="xs">
