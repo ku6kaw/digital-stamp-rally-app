@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Avatar } from '@mui/material';
+import { Box, Typography, Paper, Avatar, IconButton } from '@mui/material';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import TempleIcon from '@mui/icons-material/AccountBalance'; // 寺院・神社用アイコン
 import RestaurantIcon from '@mui/icons-material/Restaurant'; // 飲食店用アイコン
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'; // 土産屋用アイコン
 import TrainIcon from '@mui/icons-material/Train'; // 駅用アイコン
+import HomeIcon from '@mui/icons-material/Home'; // ホーム画面用アイコン
 import axios from 'axios'; // API呼び出しに使用
 import { useUserId } from '../hooks/useUserId'; // useUserIdフックをインポート
 
 const StampRallyPage: React.FC = () => {
   const navigate = useNavigate();
-  const userId = useUserId(); // useUserIdフックでuserIdを取得
-  const [stampRallyData, setStampRallyData] = useState<any[]>([]); // スタンプラリーのデータを格納
-  const [loading, setLoading] = useState(true); // ローディング状態を管理
+  const userId = useUserId();
+  const [stampRallyData, setStampRallyData] = useState<any[]>([]); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // スタンプラリー情報をAPIから取得
@@ -54,6 +55,11 @@ const StampRallyPage: React.FC = () => {
     navigate('/qr-scan');
   };
 
+  // ホームに戻るための関数
+  const goToHome = () => {
+    navigate('/home');
+  };
+
   // アイコンをspot_typeに基づいて返す関数
   const getIconByType = (spotType: number) => {
     switch (spotType) {
@@ -81,6 +87,18 @@ const StampRallyPage: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={4} px={2}>
+      {/* ホームボタンを画面左上に配置 */}
+      <IconButton
+        sx={{
+          position: 'absolute',
+          top: 16,
+          left: 16,
+        }}
+        onClick={goToHome}
+      >
+        <HomeIcon />
+      </IconButton>
+
       <Typography
         variant="h4"
         component="h1"

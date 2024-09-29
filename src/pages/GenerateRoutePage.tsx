@@ -64,7 +64,7 @@ const GenerateRoutePage: React.FC = () => {
 
       // 成功時の処理
       if (response.status === 200) {
-        navigate(`/stamp_rally/${response.data.stamp_id}`); // スタンプラリーページに遷移
+        navigate(`/stamp_rally/`); // スタンプラリーページに遷移
       } else {
         alert('経路の生成に失敗しました。');
       }
@@ -186,9 +186,9 @@ const GenerateRoutePage: React.FC = () => {
           </Grid>
           <Grid item xs={8}>
             <FormControl fullWidth sx={{ height: '56px' }}>
-              <Select
+            <Select
                 value={selectedPlace}
-                onChange={(e) => setSelectedPlace(e.target.value)}
+                onChange={(e) => setSelectedPlace(e.target.value)} // 観光地名をセット
                 displayEmpty
                 sx={{ height: '56px' }} // フォームの高さを固定
               >
@@ -196,8 +196,8 @@ const GenerateRoutePage: React.FC = () => {
                 <MenuItem value="none">なし</MenuItem>
                 {/* 観光地データを動的に表示 */}
                 {places.map((place: any, index: number) => (
-                  <MenuItem key={index} value={place.spot_id}>
-                    {place.spot_name}
+                  <MenuItem key={index} value={place.spot_name}>
+                    {place.spot_name} {/* spot_nameを表示 */}
                   </MenuItem>
                 ))}
               </Select>
