@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Card, CardMedia, CardContent, Typography, Grid, Container, Box, IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import ListIcon from '@mui/icons-material/ViewList';
 import GridOnIcon from '@mui/icons-material/GridView';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Spotデータの型を定義
 interface Spot {
@@ -64,9 +64,13 @@ const SpotListPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mt={4}>
-        <Typography variant="h4" component="h1">
+    <Container maxWidth="md" sx={{ backgroundColor: '#F2F2F7', minHeight: '100vh', py: 4 }}>
+      {/* 戻るボタン */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <IconButton onClick={() => navigate('/home')}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h5" component="h1" sx={{ flexGrow: 1, textAlign: 'center' }}>
           観光地紹介
         </Typography>
 
@@ -86,27 +90,27 @@ const SpotListPage: React.FC = () => {
         </ToggleButtonGroup>
       </Box>
 
+      {/* グリッド表示 */}
       {viewMode === 'grid' ? (
-        <Grid container spacing={3} mt={2}>
-        {spots.map((spot) => (
-          <Grid item xs={6} sm={6} md={6} key={spot.spot_id}> 
-            <Card onClick={() => handleSpotClick(spot.spot_id)} sx={{ cursor: 'pointer' }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image={spot.thumbnail_url}
-                alt={spot.name}
-              />
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  {spot.name}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      
+        <Grid container spacing={2}>
+          {spots.map((spot) => (
+            <Grid item xs={6} sm={6} md={6} key={spot.spot_id}> 
+              <Card onClick={() => handleSpotClick(spot.spot_id)} sx={{ cursor: 'pointer' }}>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={spot.thumbnail_url}
+                  alt={spot.name}
+                />
+                <CardContent>
+                  <Typography variant="body1" component="div" sx={{ textAlign: 'center' }}>
+                    {spot.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       ) : (
         <Box mt={2}>
           {spots.map((spot) => (

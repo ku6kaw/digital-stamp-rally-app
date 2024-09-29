@@ -19,7 +19,7 @@ const TopPage: React.FC = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      height="100vh"
+      height="80vh"
       bgcolor="background.paper"
       p={2}
     >
@@ -27,7 +27,7 @@ const TopPage: React.FC = () => {
         variant="h4" 
         component="h1" 
         gutterBottom 
-        sx={{ mb: 8 }} // 上に余白を追加
+        sx={{ mb: 16 }} 
       >
         サービス名
       </Typography>

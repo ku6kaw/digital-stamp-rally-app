@@ -1,7 +1,7 @@
 'use client';
 import jsQR from 'jsqr';
 import React, { useRef, useState, useEffect } from 'react';
-import axios from 'axios'; // Axiosをインポート
+import { Typography, Box } from '@mui/material';
 
 const QRCodeScanPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,7 +49,6 @@ const QRCodeScanPage: React.FC = () => {
         const qrCodeData = jsQR(imageData.data, imageData.width, imageData.height);
         if (qrCodeData) {
           setResult(qrCodeData.data);
-          handleSendStampToBackend(qrCodeData.data); // QRコードの内容をバックエンドに送信
           return;
         }
         setTimeout(scanQrCode, 100); // 再帰的にスキャンを繰り返す
@@ -57,41 +56,148 @@ const QRCodeScanPage: React.FC = () => {
     }
   };
 
-  const handleSendStampToBackend = async (spotId: string) => {
-    try {
-      // バックエンドにユーザーIDと観光地IDを送信する
-      const response = await axios.post('/api/update-stamp', {
-        userId, // 仮のユーザーID
-        spotId, // QRコードから抽出された観光地ID
-      });
-
-      if (response.status === 200) {
-        console.log('スタンプの更新に成功しました');
-      } else {
-        console.error('スタンプの更新に失敗しました');
-      }
-    } catch (error) {
-      console.error('バックエンドへの通信エラー:', error);
-    }
-  };
-
   return (
-    <div>
-      {!result && (
-        <div className="flex justify-center">
-          <div className="relative h-[300px] w-[300px]">
-            <video ref={videoRef} autoPlay playsInline className="absolute left-0 top-0 -z-50 h-[300px] w-[300px]" />
-            <canvas ref={canvasRef} width="300" height="300" className="absolute left-0 top-0" />
-          </div>
-        </div>
-      )}
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="column"
+      sx={{
+        height: '100vh',
+        backgroundColor: 'black',
+        color: 'white',
+        position: 'relative',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          padding: '8px 16px',
+          borderRadius: '8px',
+          position: 'absolute',
+          top: '10%',
+          zIndex: 10,
+        }}
+      >
+        スキャンするコードを見つけてください。
+      </Typography>
+      
+      <Box
+        sx={{
+          position: 'relative',
+          height: '300px',
+          width: '300px',
+          border: 'none',
+        }}
+      >
+        {/* スキャン範囲の角 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '50px',
+            width: '50px',
+            borderTop: '4px solid white',
+            borderLeft: '4px solid white',
+            zIndex: 10,
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '50px',
+            width: '50px',
+            borderTop: '4px solid white',
+            borderRight: '4px solid white',
+            zIndex: 10,
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            height: '50px',
+            width: '50px',
+            borderBottom: '4px solid white',
+            borderLeft: '4px solid white',
+            zIndex: 10,
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            height: '50px',
+            width: '50px',
+            borderBottom: '4px solid white',
+            borderRight: '4px solid white',
+            zIndex: 10,
+          }}
+        />
+
+        {/* QRコードスキャンのビデオ表示 */}
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '300px',
+            width: '300px',
+            zIndex: 1,
+          }}
+        />
+        <canvas
+          ref={canvasRef}
+          width="300"
+          height="300"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 0,
+          }}
+        />
+      </Box>
+
       {result && (
-        <div className="flex justify-center">
-          <p>QRコードの内容: {result}</p>
-        </div>
+        <Typography
+          variant="body1"
+          sx={{
+            position: 'absolute',
+            bottom: '10%',
+            zIndex: 10,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            padding: '8px 16px',
+            borderRadius: '8px',
+          }}
+        >
+          QRコードの内容: {result}
+        </Typography>
       )}
-      {error && <p className="text-center text-xs text-red-500">{error}</p>}
-    </div>
+
+      {error && (
+        <Typography
+          variant="body2"
+          sx={{
+            position: 'absolute',
+            bottom: '5%',
+            zIndex: 10,
+            color: 'red',
+          }}
+        >
+          {error}
+        </Typography>
+      )}
+    </Box>
   );
 };
 

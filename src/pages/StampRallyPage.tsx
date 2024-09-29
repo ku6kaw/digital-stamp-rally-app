@@ -1,12 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography, Paper, Avatar } from '@mui/material';
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
 // 仮のスタンプラリーデータ
 const mockStampRallyData = [
-  { id: 1, name: '観光地 a', stayUntil: '10:00', status: 'completed' }, // 完了済み
-  { id: 2, name: '観光地 b', stayUntil: '11:00', status: 'current' }, // 現在実施中
-  { id: 3, name: '観光地 c', stayUntil: '12:00', status: 'upcoming' }, // 次の目的地
-  { id: 4, name: '観光地 d', stayUntil: '13:00', status: 'upcoming' }, // 次の目的地
+  { id: 1, name: '観光地A', stayUntil: '11:00', status: 'completed' },
+  { id: 2, name: '観光地B', stayUntil: '12:00', status: 'current' },
+  { id: 3, name: '観光地C', stayUntil: '14:00', status: 'upcoming' },
+  { id: 4, name: '観光地D', stayUntil: '15:00', status: 'upcoming' },
 ];
 
 const StampRallyPage: React.FC = () => {
@@ -18,70 +20,85 @@ const StampRallyPage: React.FC = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      {mockStampRallyData.map((spot, index) => (
-        <div key={spot.id}>
-          {/* 観光地のボックス */}
-          <div style={getSpotStyle(spot.status)} onClick={handleBoxClick}>
-            {spot.name}：滞在 {spot.stayUntil} まで
-          </div>
+    <Box display="flex" flexDirection="column" alignItems="center" mt={4} px={2}>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{
+          marginBottom: '40px', // 下に20pxの余白を追加
+          textAlign: 'center',
+        }}
+      >スタンプラリー
+      </Typography>
 
-          {/* 移動時間と矢印の表示（最後の観光地以外） */}
-          {index < mockStampRallyData.length - 1 && (
-            <div style={arrowContainerStyle}>
-              <span style={moveTimeStyle}>○○分移動</span>
-              <span style={arrowStyle}>↓</span> {/* 矢印を表示 */}
-            </div>
-          )}
-        </div>
+      {mockStampRallyData.map((spot, index) => (
+        <Box key={spot.id} width="80%" maxWidth="400px" mb={4}>
+        <Box display="flex" justifyContent="space-between">
+          {/* 観光地名のボックス */}
+          <Paper
+            elevation={3}
+            sx={{
+              backgroundColor: spot.status === 'completed' ? '#dcdcdc' : getBackgroundColor(spot.status), // 実施済みの観光地に薄いグレーを適用
+              color: spot.status === 'completed' ? '#A9A9A9' : '#fff',
+              padding: '10px',
+              cursor: 'pointer',
+              textAlign: 'center',
+              borderRadius: '5px 0 0 5px', // 左側のみ角を丸く
+              width: '40%',
+              height: '60px', // 縦幅を広げる
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onClick={handleBoxClick}
+          >
+            <Typography variant="body2">{spot.name}</Typography>
+          </Paper>
+      
+          {/* 目安時間のボックス */}
+          <Paper
+            elevation={3}
+            sx={{
+              backgroundColor: spot.status === 'completed' ? '#efefef' : '#FFFFFF',
+              color: spot.status === 'completed' ? '#A9A9A9' : '#000',
+              padding: '10px',
+              textAlign: 'center',
+              borderRadius: '0 5px 5px 0', // 右側のみ角を丸く
+              width: '60%',
+              height: '60px', // 縦幅を広げる
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onClick={handleBoxClick}
+          >
+            <Typography variant="body2">目安時間：{spot.stayUntil}まで</Typography>
+          </Paper>
+        </Box>
+      
+        {/* 移動時間と矢印の表示（最後の観光地以外） */}
+        {index < mockStampRallyData.length - 1 && (
+          <Box display="flex" flexDirection="column" alignItems="center" mt={4}>
+            <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+              <Avatar sx={{ bgcolor: 'lightgray', width: 24, height: 24 }}>
+                <DirectionsWalkIcon fontSize="small" />
+              </Avatar>
+              <Typography variant="body2" color="textSecondary">移動 ○○分</Typography>
+            </Box>
+          </Box>
+        )}
+      </Box>
+      
       ))}
-    </div>
+    </Box>
   );
 };
 
-// スタイル関数: ステータスに応じて色を変える
-const getSpotStyle = (status: string): React.CSSProperties => {
-  let backgroundColor = '#4CAF50'; // デフォルトは青
-  if (status === 'completed') backgroundColor = '#d3d3d3'; // 完了済みはグレー
-  if (status === 'current') backgroundColor = '#f44336'; // 現在実施中は赤
-  return {
-    backgroundColor,
-    color: '#fff',
-    padding: '20px',
-    margin: '10px 0',
-    textAlign: 'center',
-    borderRadius: '10px',
-    fontSize: '18px',
-    cursor: 'pointer', // クリック可能にするためのスタイル
-  };
-};
-
-// コンテナのスタイル
-const containerStyle: React.CSSProperties = {
-  width: '300px',
-  margin: '0 auto',
-  textAlign: 'center',
-};
-
-// 移動時間のスタイル
-const moveTimeStyle: React.CSSProperties = {
-  fontSize: '16px',
-  color: '#000',
-};
-
-// 矢印のスタイル
-const arrowStyle: React.CSSProperties = {
-  fontSize: '24px',
-  color: '#000',
-  marginTop: '10px',
-};
-
-// 移動時間と矢印のコンテナスタイル
-const arrowContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  margin: '10px 0',
+// 背景色をステータスに応じて変更
+const getBackgroundColor = (status: string) => {
+  if (status === 'completed') return '#d3d3d3'; // 完了済みはグレー
+  if (status === 'current') return '#4F7FFF'; // 現在実施中は青
+  return '#B4D5FF'; // 次の目的地は薄青
 };
 
 export default StampRallyPage;

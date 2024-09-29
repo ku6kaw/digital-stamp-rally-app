@@ -13,18 +13,22 @@ const HomePage: React.FC = () => {
   const userId = '12345';  // 実際にはログイン情報から取得
 
   // スタンプラリーページに遷移する処理
-  const goToFeature1 = async () => {
-    try {
-      const response = await api.post('/api/check_stamp_rally', { userId });
-      if (response.data.hasIncompleteStampRally) {
-        navigate('/stamp_rally'); 
-      } else {
-        navigate('/generate_route'); 
-      }
-    } catch (error) {
-      console.error('Error checking stamp rally status:', error);
-    }
-  };
+  // const goToFeature1 = async () => {
+  //   try {
+  //     const response = await api.post('/api/check_stamp_rally', { userId });
+  //     if (response.data.hasIncompleteStampRally) {
+  //       navigate('/stamp_rally'); 
+  //     } else {
+  //       navigate('/generate_route'); 
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking stamp rally status:', error);
+  //   }
+  // };
+
+  const goToFeature1 = () => {
+    navigate('/generate_route'); 
+  }
 
   // ログアウト処理
   const handleLogout = () => {
